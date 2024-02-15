@@ -230,6 +230,6 @@ class Lecture(object):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="support planning lecture")
-    parser.add_argument('configfile', help='configuration file')
+    parser.add_argument('configfile', type=str, nargs="?")
     parser.add_argument('--init', '-i', help='initial proc', action='store_true')
     Lecture(parser.parse_args())
