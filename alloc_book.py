@@ -54,6 +54,10 @@ class Lecture(object):
 
     def exec_main(self):
         configfile = self.args.configfile
+        if configfile is None:
+            print("===== Error(configfile) =====")
+            print(f'file:configfile is not found.')
+            exit()
         if not os.path.isfile(configfile):
             print("===== Error(configfile) =====")
             print(f'file:{configfile} is not found.')
