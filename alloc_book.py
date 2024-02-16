@@ -107,12 +107,6 @@ class Lecture(object):
                     else:
                         _, v = self.get_page_range(n)
                     self.set_end_page(n, v)
-                elif command[1] == 'en':
-                    if len(command) == 3:
-                        v = int(command[2])
-                    else:
-                        _, v = self.get_page_range(n)
-                    self.set_end_page_prev(n, v)
         elif command[0] == ':%':
             self.display_total_line()
         elif command[0] == ':wq':
@@ -122,6 +116,8 @@ class Lecture(object):
             self.write_file()
         elif command[0] == ':q':
             self.quit()
+        elif command[0] == ':help':
+            self.show_help()
 
     def sum_up_pages(self):
         return self.prefaces + sum(self.buffer_list)
@@ -136,7 +132,7 @@ class Lecture(object):
             else:
                 self.buffer_list[i] = page
                 undefined_pages -= page
-        while(self.sum_up_pages() < self.total_pages):
+        while (self.sum_up_pages() < self.total_pages):
             for (i, page) in enumerate(self.confirmed_list):
                 if self.sum_up_pages() == self.total_pages:
                     break
@@ -154,21 +150,6 @@ class Lecture(object):
         bn = v - self.prefaces - sum(self.buffer_list[:n])
         self.buffer_list[n] = bn
         self.confirmed_list[n] = bn
-
-    def set_end_page_prev(self, n, v):
-        # preserve next line end page
-        #
-        # n: index of line
-        # v: page number of end page
-        #
-        an = self.buffer_list[n]
-        bn = v - self.prefaces - sum(self.buffer_list[:n])
-        self.buffer_list[n] = bn
-        self.confirmed_list[n] = bn
-        if n < self.nlec:
-            tmp = self.buffer_list[n+1]
-            self.buffer_list[n+1] += (bn - an)
-            self.confirmed_list[n+1] = tmp + (bn - an)
 
     def replace_line(self, n, v):
         #
@@ -227,9 +208,28 @@ class Lecture(object):
         print(f'  pp.{start_page:3d} -- {end_page:3d}', end='')
         print(f' ({npage:3d} pages)')
 
+    def show_help(self):
+        #
+        # simple manual to operate alloc_book
+        #
+        #
+        print('# here "n" is the line you want to modify/remove line')
+        print(':help     ... display this manual')
+        print(':%        ... show all list')
+        print(':n        ... single list')
+        print(':n, r, m  ... replace m in lect n')
+        print(':n, r     ... replace candidate value in lect n')
+        print(':n, dd    ... delete value in lect n')
+        print(':w        ... save file')
+        print(':q        ... quit alloc_book')
+        print(':wq       ... save file and quit alloc_book')
+        return self
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="support planning lecture")
     parser.add_argument('configfile', type=str, nargs="?")
-    parser.add_argument('--init', '-i', help='initial proc', action='store_true')
+    parser.add_argument('--init', '-i',
+                        help='initial proc',
+                        action='store_true')
     Lecture(parser.parse_args())
